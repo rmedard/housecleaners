@@ -1,5 +1,7 @@
 {
   "name": "houseCleanersApp",
-  "integrations": {},
+  "integrations": {
+    "cordova": {}
+  },
   "type": "angular"
 }

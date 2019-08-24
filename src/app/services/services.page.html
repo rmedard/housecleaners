@@ -1,0 +1,14 @@
+<app-top-header [title]="title" [showBackButton]="false"></app-top-header>
+<ion-content class="card-background-page">
+    <ion-card [routerLink]="['/categories', 1]" routerDirection="forward">
+        <ion-img src="/assets/interieur.jpg"></ion-img>
+        <div class="card-title">Interieur</div>
+        <div class="card-subtitle">{{interiorServicesCount}} services</div>
+    </ion-card>
+
+    <ion-card [routerLink]="['/categories', 2]" routerDirection="forward">
+        <ion-img src="/assets/exterieur.jpg"></ion-img>
+        <div class="card-title">Exterieur</div>
+        <div class="card-subtitle">{{exteriorServicesCount}} services</div>
+    </ion-card>
+</ion-content>

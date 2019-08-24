@@ -1,0 +1,36 @@
+<app-top-header [title]="title" [showBackButton]="true"></app-top-header>
+<ion-content>
+    <ion-card>
+        <ion-card-header>
+            <ion-card-title>{{service.name}}</ion-card-title>
+        </ion-card-header>
+        <ion-card-content>
+            {{service.description}}
+        </ion-card-content>
+    </ion-card>
+    <ion-item-group>
+        <ion-item-divider color="primary">
+            <ion-label>Choisir la date et l'heure</ion-label>
+        </ion-item-divider>
+        <ion-item lines="full">
+            <ion-label>Date</ion-label>
+            <ion-datetime displayFormat="DD/MM/YYYY" min="{{minimumDate | amDateFormat:'YYYY-MM-DD'}}"
+                          max="2050-12-31" (ionChange)="onDateChange($event)" [(ngModel)]="chosenDate"></ion-datetime>
+        </ion-item>
+        <ion-item lines="none" class="custom-slider">
+            <ng5-slider [(value)]="fromValue" [(highValue)]="toValue" [options]="options"
+                        (userChangeEnd)="onHourRangeChange($event)"></ng5-slider>
+        </ion-item>
+        <ion-item-divider color="primary" margin-top>
+            <ion-label>{{availableProfessionals.length}} Professionels disponibles</ion-label>
+        </ion-item-divider>
+        <ion-item *ngFor="let professional of availableProfessionals" detail="true" lines="full"
+                  (click)="presentActionSheet(professional.last_name)">
+            <ion-avatar slot="start">
+                <ion-img src="{{professional.picture}}" class="rounded-full"></ion-img>
+            </ion-avatar>
+            <ion-label>{{professional.last_name}}, {{professional.first_name}}</ion-label>
+            <ion-badge color="dark">Prix: {{professional.price}}€/h</ion-badge>
+        </ion-item>
+    </ion-item-group>
+</ion-content>
