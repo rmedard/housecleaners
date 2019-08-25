@@ -27,14 +27,22 @@
   --ion-font-family: -apple-system, BlinkMacSystemFont, "Helvetica Neue", "Roboto", sans-serif;
 
   ion-content {
-    --background: linear-gradient(-135deg, var(--ion-color-primary), var(--ion-color-warning));
+    --background: linear-gradient(-135deg, var(--ion-color-warning), var(--ion-color-primary));
   }
 
   ion-card {
     margin: 10px;
-    ion-card-content, ion-card-header {
+
+    ion-card-content {
       background: var(--ion-color-light);
       color: var(--ion-color-primary);
+    }
+
+    ion-card-header {
+      background: var(--ion-color-primary);
+      ion-card-title {
+        color: var(--ion-color-warning);
+      }
     }
   }
 }

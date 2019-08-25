@@ -2,9 +2,9 @@
   <ion-toolbar color="primary">
     <ion-buttons slot="start" *ngIf="showBackButton">
       <ion-back-button icon="arrow-round-back"></ion-back-button>
-      <ion-button (click)="navCtrl.pop()"><ion-icon name="arrow-back" slot="start"></ion-icon></ion-button>
+      <ion-button (click)="navCtrl.pop()"><ion-icon name="arrow-back" slot="start" color="warning"></ion-icon></ion-button>
     </ion-buttons>
-    <ion-title>{{title}}</ion-title>
+    <ion-title color="warning">{{title}}</ion-title>
     <ion-progress-bar *ngIf="routeLoading" type="indeterminate" color="light"></ion-progress-bar>
   </ion-toolbar>
 </ion-header>

@@ -1,5 +1,6 @@
 <ion-card [routerLink]="['/services', service.id]" routerDirection="forward">
-    <ion-card-header color="primary">
+    <ion-card-header>
+        <ion-icon name="done-all" slot="start"></ion-icon>
         <ion-card-title>{{service.name}}</ion-card-title>
     </ion-card-header>
     <ion-card-content>

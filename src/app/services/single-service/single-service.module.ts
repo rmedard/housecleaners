@@ -7,14 +7,13 @@ import {IonicModule} from '@ionic/angular';
 
 import {SingleServicePage} from './single-service.page';
 import {MomentModule} from 'ngx-moment';
-import {Ng5SliderModule} from 'ng5-slider';
 import {SharedModule} from '../../+shared/shared.module';
 
 const routes: Routes = [
-  {
-    path: '',
-    component: SingleServicePage
-  }
+    {
+        path: '',
+        component: SingleServicePage
+    }
 ];
 
 @NgModule({
@@ -24,9 +23,9 @@ const routes: Routes = [
         IonicModule,
         RouterModule.forChild(routes),
         MomentModule,
-        Ng5SliderModule,
         SharedModule
     ],
-  declarations: [SingleServicePage]
+    declarations: [SingleServicePage]
 })
-export class SingleServicePageModule {}
+export class SingleServicePageModule {
+}

@@ -5,32 +5,33 @@ import {Availability} from '../+models/availability';
 import {map} from 'rxjs/operators';
 import {Professional} from '../+models/professional';
 
-import 'rxjs/add/observable/of';
-import {Observable} from 'rxjs';
+import {of} from 'rxjs';
 
 const API_URL = environment.apiUrl;
 const httpOptions = {
-  headers: new HttpHeaders({'Content-Type': 'application/json'})
+    headers: new HttpHeaders({'Content-Type': 'application/json'})
 };
 
 @Injectable({
-  providedIn: 'root'
+    providedIn: 'root'
 })
 export class OrderingService {
 
-  constructor(private http: HttpClient) { }
-
-  getProfessionalsByAvailability(availability: Availability) {
-    if (availability.start_time === availability.end_time) {
-      return Observable.of([]);
+    constructor(private http: HttpClient) {
     }
-    return this.http.post<Professional[]>(`${API_URL}/professionals/availability`, availability, httpOptions).pipe(map(professionals => {
-      professionals.map(prof => {
-        if (!prof.picture || prof.picture.length === 0) {
-          prof.picture = 'https://www.gravatar.com/avatar/00000000000000000000000000000000?d=mp';
+
+    getProfessionalsByAvailability(availability: Availability) {
+        if (availability.start_time === availability.end_time) {
+            return of([]);
         }
-      });
-      return professionals;
-    }));
-  }
+        return this.http.post<Professional[]>(`${API_URL}/professionals/availability`, availability, httpOptions)
+            .pipe(map(professionals => {
+                professionals.map(prof => {
+                    if (!prof.picture || prof.picture.length === 0) {
+                        prof.picture = 'https://www.gravatar.com/avatar/00000000000000000000000000000000?d=mp';
+                    }
+                });
+                return professionals;
+            }));
+    }
 }

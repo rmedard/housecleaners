@@ -3,12 +3,11 @@ import {Service} from '../../+models/service';
 import {ActivatedRoute} from '@angular/router';
 import {Availability} from '../../+models/availability';
 import * as moment from 'moment';
-import {LabelType, Options} from 'ng5-slider';
 import {OrderingService} from '../../+services/ordering.service';
 import {Professional} from '../../+models/professional';
 import {AlertController, IonItemSliding, ToastController} from '@ionic/angular';
 
-const LATEST_HOUR = 20;
+const LATEST_HOUR = 18;
 const AVAILABILITY_TIME_FORMAT = 'YYYY-MM-DD HH:mm:ss';
 
 @Component({
@@ -28,7 +27,6 @@ export class SingleServicePage implements OnInit {
     private _availableProfessionals: Professional[];
 
     hourRange: HourRange = {lower: 8, upper: LATEST_HOUR} as HourRange;
-    options: Options;
 
     get availableProfessionals(): Professional[] {
         return this._availableProfessionals;
@@ -57,23 +55,6 @@ export class SingleServicePage implements OnInit {
         this.computeMinimumDate();
         this.computeChosenDate(new Date());
         this._availableProfessionals = this.service.professionals;
-        this.options = {
-            showTicksValues: false,
-            showTicks: true,
-            floor: 8,
-            ceil: LATEST_HOUR,
-            step: 1,
-            translate: (value: number, label: LabelType): string => {
-                switch (label) {
-                    case LabelType.Low:
-                        return '<b>De </b>' + value + 'h';
-                    case LabelType.High:
-                        return '<b>À </b>' + value + 'h';
-                    default:
-                        return '';
-                }
-            }
-        } as Options;
     }
 
     onDateChange(event: CustomEvent): void {
@@ -84,7 +65,6 @@ export class SingleServicePage implements OnInit {
     }
 
     onHourRangeChange(event: CustomEvent) {
-        // this.validateHourRange(event);
         this.orderingService.getProfessionalsByAvailability(this.availability)
             .subscribe(professionals => this._availableProfessionals = professionals);
     }
@@ -134,15 +114,13 @@ export class SingleServicePage implements OnInit {
                 {
                     text: 'Annuler',
                     role: 'cancel',
-                    cssClass: 'secondary',
-                    handler: (blah) => {
-                        // this.sm.closeOpened();
+                    cssClass: 'primary',
+                    handler: () => {
                         this.itemSliding.closeOpened();
                     }
                 }, {
                     text: 'Confirmer',
                     handler: () => {
-                        console.log('Confirm Okay');
                         this.itemSliding.closeOpened();
                         this.showSuccessNotification();
                     }
@@ -156,7 +134,7 @@ export class SingleServicePage implements OnInit {
         const toast = await this.toastCtrl.create({
             message: 'Commande passé avec succès!',
             duration: 2000,
-            color: 'success',
+            color: 'warning',
             position: 'bottom',
             translucent: true,
             showCloseButton: true

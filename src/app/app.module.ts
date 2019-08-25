@@ -10,14 +10,13 @@ import {AppRoutingModule} from './app-routing.module';
 import {AppComponent} from './app.component';
 import {HttpClientModule} from '@angular/common/http';
 import {MomentModule} from 'ngx-moment';
-import {Ng5SliderModule} from 'ng5-slider';
 import {SharedModule} from './+shared/shared.module';
 
 @NgModule({
     declarations: [AppComponent],
     entryComponents: [],
     imports: [BrowserModule, IonicModule.forRoot(), AppRoutingModule,
-        HttpClientModule, MomentModule, Ng5SliderModule, SharedModule],
+        HttpClientModule, MomentModule, SharedModule],
     providers: [
         StatusBar,
         SplashScreen,
