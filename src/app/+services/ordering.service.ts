@@ -1,13 +1,13 @@
-import { Injectable } from '@angular/core';
+import {Injectable} from '@angular/core';
 import {HttpClient, HttpHeaders} from '@angular/common/http';
 import {environment} from '../../environments/environment';
 import {Availability} from '../+models/availability';
-import {Service} from '../+models/service';
 import {map} from 'rxjs/operators';
 import {Professional} from '../+models/professional';
 
 import 'rxjs/add/observable/of';
 import {Observable} from 'rxjs';
+
 const API_URL = environment.apiUrl;
 const httpOptions = {
   headers: new HttpHeaders({'Content-Type': 'application/json'})

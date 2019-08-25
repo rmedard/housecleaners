@@ -1,46 +1,5 @@
-// We need to use ::ng-deep to overcome view encapsulation
-::ng-deep {
-  .custom-slider .ng5-slider .ng5-slider-bar {
-    background: var(--ion-color-light);
-    height: 3px;
-  }
-  .custom-slider .ng5-slider .ng5-slider-selection {
-    background: var(--ion-color-primary);
-  }
-
-  .custom-slider .ng5-slider .ng5-slider-pointer {
-      cursor: pointer;
-      width: 22px;
-      height: 22px;
-      top: -9px;
-      background-color: var(--ion-color-primary);
-      z-index: 3;
-      border-radius: 16px;
-  }
-
-  .custom-slider .ng5-slider .ng5-slider-pointer:after {
-    display: none;
-  }
-
-  .custom-slider .ng5-slider .ng5-slider-bubble {
-    bottom: 14px;
-  }
-
-  .custom-slider .ng5-slider .ng5-slider-limit {
-    font-weight: bold;
-    color: var(--ion-color-primary);
-  }
-
-  .custom-slider .ng5-slider .ng5-slider-tick {
-    width: 1px;
-    height: 10px;
-    margin-left: 10px;
-    border-radius: 0;
-    background:var(--ion-color-primary);
-    top: -1px;
-  }
-
-  .custom-slider .ng5-slider .ng5-slider-tick.ng5-slider-selected {
-    background: var(--ion-color-primary);
-  }
+ion-range {
+  --knob-size: 30px;
+  --bar-background: var(--ion-color-medium);
+  --bar-background-active: var(--ion-color-primary);
 }

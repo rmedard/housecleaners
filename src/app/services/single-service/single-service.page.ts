@@ -1,14 +1,14 @@
-import {Component, OnInit} from '@angular/core';
+import {Component, OnInit, ViewChild} from '@angular/core';
 import {Service} from '../../+models/service';
 import {ActivatedRoute} from '@angular/router';
 import {Availability} from '../../+models/availability';
 import * as moment from 'moment';
-import {ChangeContext, LabelType, Options} from 'ng5-slider';
+import {LabelType, Options} from 'ng5-slider';
 import {OrderingService} from '../../+services/ordering.service';
 import {Professional} from '../../+models/professional';
-import {ActionSheetController} from '@ionic/angular';
+import {AlertController, IonItemSliding, ToastController} from '@ionic/angular';
 
-const LATEST_HOUR = 18;
+const LATEST_HOUR = 20;
 const AVAILABILITY_TIME_FORMAT = 'YYYY-MM-DD HH:mm:ss';
 
 @Component({
@@ -17,6 +17,9 @@ const AVAILABILITY_TIME_FORMAT = 'YYYY-MM-DD HH:mm:ss';
     styleUrls: ['./single-service.page.scss'],
 })
 export class SingleServicePage implements OnInit {
+
+    @ViewChild('itemSliding', {static: false}) itemSliding: IonItemSliding;
+
     title = 'Service';
     service: Service = {} as Service;
     chosenDate: string;
@@ -24,8 +27,7 @@ export class SingleServicePage implements OnInit {
     private _availability: Availability = {} as Availability;
     private _availableProfessionals: Professional[];
 
-    fromValue: number;
-    toValue: number;
+    hourRange: HourRange = {lower: 8, upper: LATEST_HOUR} as HourRange;
     options: Options;
 
     get availableProfessionals(): Professional[] {
@@ -39,23 +41,21 @@ export class SingleServicePage implements OnInit {
     get availability(): Availability {
         this._availability.service_id = this.service.id.toString();
         this._availability.start_time = moment(new Date(this.chosenDate))
-            .hour(this.fromValue).minute(0).second(0).format(AVAILABILITY_TIME_FORMAT);
+            .hour(this.hourRange.lower).minute(0).second(0).format(AVAILABILITY_TIME_FORMAT);
         this._availability.end_time = moment(new Date(this.chosenDate))
-            .hour(this.toValue).minute(0).second(0).format(AVAILABILITY_TIME_FORMAT);
+            .hour(this.hourRange.upper).minute(0).second(0).format(AVAILABILITY_TIME_FORMAT);
         return this._availability;
     }
 
     constructor(private activatedRoute: ActivatedRoute,
                 private orderingService: OrderingService,
-                private actionSheetCtrl: ActionSheetController) {
+                private alertCtrl: AlertController, private toastCtrl: ToastController) {
     }
 
     ngOnInit() {
         this.service = this.activatedRoute.snapshot.data.service;
         this.computeMinimumDate();
-        this.toValue = LATEST_HOUR;
         this.computeChosenDate(new Date());
-        console.log('Minimum: ' + this.minimumDate);
         this._availableProfessionals = this.service.professionals;
         this.options = {
             showTicksValues: false,
@@ -78,41 +78,23 @@ export class SingleServicePage implements OnInit {
 
     onDateChange(event: CustomEvent): void {
         this.computeChosenDate(new Date(event.detail.value));
-        console.log('Minimum: ' + this.minimumDate);
+        console.log(this.getEarliestHour());
         this.orderingService.getProfessionalsByAvailability(this.availability)
             .subscribe(professionals => this._availableProfessionals = professionals);
     }
 
-    async presentActionSheet(lastName: string) {
-        const actionSheet = await this.actionSheetCtrl.create({
-            header: 'Commander le service de ' + lastName,
-            buttons: [{
-                text: 'Confirmer la commande',
-                icon: 'checkmark',
-                handler: () => {
-                    console.log('Confirmation faite');
-                }
-            }, {
-                text: 'Annuler',
-                icon: 'close',
-                role: 'cancel',
-            }]
-        });
-        await actionSheet.present();
-    }
-
-    onHourRangeChange(context: ChangeContext): void {
-        this.validateHourRange(context);
+    onHourRangeChange(event: CustomEvent) {
+        // this.validateHourRange(event);
         this.orderingService.getProfessionalsByAvailability(this.availability)
             .subscribe(professionals => this._availableProfessionals = professionals);
     }
 
     private computeChosenDate(date: Date): void {
-        this.fromValue = 8;
+        this.hourRange.lower = 8;
         if (moment(date).isSame(new Date(), 'day')) {
             const currentHour: number = moment(new Date()).hour();
             if (currentHour < LATEST_HOUR - 1) {
-                this.fromValue = currentHour < 8 ? 8 : currentHour + 1;
+                this.hourRange.lower = currentHour < 8 ? 8 : currentHour + 1;
             } else {
                 date = moment(date).add(1, 'day').toDate();
             }
@@ -122,18 +104,68 @@ export class SingleServicePage implements OnInit {
 
     private computeMinimumDate() {
         if (moment(new Date()).hour() >= LATEST_HOUR - 1) {
-            this.minimumDate = moment(new Date()).add(1, 'day').toDate();
+            this.minimumDate = moment(new Date()).hour(8).minute(0).second(0).add(1, 'day').toDate();
         } else {
-            this.minimumDate = new Date();
+            this.minimumDate = moment(new Date()).hour(new Date().getHours() + 1).minute(0).second(0).toDate();
         }
     }
 
-    validateHourRange(context: ChangeContext) {
-        if (moment(this.chosenDate).isSame(new Date(), 'day')) {
-            const currentHour: number = moment(new Date()).hour() + 1;
-            if (context.value < currentHour) {
-                this.fromValue = currentHour;
+    getLatestHour() {
+        return LATEST_HOUR;
+    }
+
+    getEarliestHour() {
+        if (moment(this.chosenDate, 'YYYY-MM-DD').isSame(new Date(), 'day')) {
+            if (moment(new Date()).hour() < 8 || moment(new Date()).hour() > LATEST_HOUR) {
+                return 8;
+            } else {
+                return moment(new Date()).hour() + 1;
             }
+        } else {
+            return 8;
         }
     }
+
+    async confirmOrder(professional: Professional) {
+        const alert = await this.alertCtrl.create({
+            header: 'Confirmation',
+            message: 'Confirmer la commande de services de <strong>' + professional.last_name + '</strong>?',
+            buttons: [
+                {
+                    text: 'Annuler',
+                    role: 'cancel',
+                    cssClass: 'secondary',
+                    handler: (blah) => {
+                        // this.sm.closeOpened();
+                        this.itemSliding.closeOpened();
+                    }
+                }, {
+                    text: 'Confirmer',
+                    handler: () => {
+                        console.log('Confirm Okay');
+                        this.itemSliding.closeOpened();
+                        this.showSuccessNotification();
+                    }
+                }
+            ]
+        });
+        await alert.present();
+    }
+
+    async showSuccessNotification() {
+        const toast = await this.toastCtrl.create({
+            message: 'Commande passé avec succès!',
+            duration: 2000,
+            color: 'success',
+            position: 'bottom',
+            translucent: true,
+            showCloseButton: true
+        });
+        toast.present();
+    }
+}
+
+export interface HourRange {
+    lower: number;
+    upper: number;
 }

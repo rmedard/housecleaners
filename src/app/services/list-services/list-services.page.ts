@@ -9,8 +9,7 @@ import {ServicesService} from '../../+services/services.service';
     styleUrls: ['./list-services.page.scss'],
 })
 export class ListServicesPage implements OnInit {
-    title = 'Nose services';
-    showBackButton = true;
+    title = 'Nos services';
     services: Service[];
 
     constructor(private servicesService: ServicesService, private activatedRoute: ActivatedRoute) {

@@ -17,20 +17,32 @@
             <ion-datetime displayFormat="DD/MM/YYYY" min="{{minimumDate | amDateFormat:'YYYY-MM-DD'}}"
                           max="2050-12-31" (ionChange)="onDateChange($event)" [(ngModel)]="chosenDate"></ion-datetime>
         </ion-item>
-        <ion-item lines="none" class="custom-slider">
-            <ng5-slider [(value)]="fromValue" [(highValue)]="toValue" [options]="options"
-                        (userChangeEnd)="onHourRangeChange($event)"></ng5-slider>
+        <ion-item lines="none">
+            <ion-range dualKnobs="true" [min]="getEarliestHour()" max="{{getLatestHour()}}"
+                       step="1" snaps="true" ticks="true" color="primary" [(ngModel)]="hourRange"
+                       (ionChange)="onHourRangeChange($event)" pin="true" debounce="300" name="hourRange">
+                <ion-label slot="start">De {{hourRange.lower}}h</ion-label>
+                <ion-label slot="end">A {{hourRange.upper}}h</ion-label>
+            </ion-range>
         </ion-item>
         <ion-item-divider color="primary" margin-top>
-            <ion-label>{{availableProfessionals.length}} Professionels disponibles</ion-label>
+
+                <ion-chip color="warning">
+                    <ion-icon name="person"></ion-icon>
+                    <ion-label>{{availableProfessionals.length}} Professionels disponibles</ion-label>
+                </ion-chip>
         </ion-item-divider>
-        <ion-item *ngFor="let professional of availableProfessionals" detail="true" lines="full"
-                  (click)="presentActionSheet(professional.last_name)">
-            <ion-avatar slot="start">
-                <ion-img src="{{professional.picture}}" class="rounded-full"></ion-img>
-            </ion-avatar>
-            <ion-label>{{professional.last_name}}, {{professional.first_name}}</ion-label>
-            <ion-badge color="dark">Prix: {{professional.price}}€/h</ion-badge>
-        </ion-item>
+        <ion-item-sliding *ngFor="let professional of availableProfessionals" #itemSliding>
+            <ion-item-options side="start">
+                <ion-item-option color="success" (click)="confirmOrder(professional)">Commander</ion-item-option>
+            </ion-item-options>
+            <ion-item detail="true">
+                <ion-avatar slot="start">
+                    <ion-img src="{{professional.picture}}" class="rounded-full"></ion-img>
+                </ion-avatar>
+                <ion-label>{{professional.last_name}}, {{professional.first_name}}</ion-label>
+                <ion-badge color="dark">Prix: {{professional.price}}€/h</ion-badge>
+            </ion-item>
+        </ion-item-sliding>
     </ion-item-group>
 </ion-content>
