@@ -17,6 +17,9 @@ export class ListServicesPage implements OnInit {
 
     ngOnInit() {
         this.services = this.activatedRoute.snapshot.data.services;
+        if (this.services && this.services.length > 0) {
+            this.title = this.services[0].category_id === 1 ? this.title + ' d\'interieur' : this.title + ' d\'exterieur';
+        }
     }
 
 }

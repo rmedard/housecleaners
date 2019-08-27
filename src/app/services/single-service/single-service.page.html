@@ -17,7 +17,7 @@
         </ion-item-divider>
         <ion-item lines="full">
             <ion-label>Date</ion-label>
-            <ion-datetime displayFormat="DD/MM/YYYY" min="{{minimumDate | amDateFormat:'YYYY-MM-DD'}}"
+            <ion-datetime displayFormat="DD/MM/YYYY" min="{{minimumDate | amDateFormat:'YYYY-MM-DD'}}" mode="ios"
                           max="2050-12-31" (ionChange)="onDateChange($event)" [(ngModel)]="chosenDate"></ion-datetime>
         </ion-item>
         <ion-item lines="none">

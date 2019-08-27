@@ -3,3 +3,9 @@ ion-range {
   --bar-background: var(--ion-color-medium);
   --bar-background-active: var(--ion-color-primary);
 }
+
+ion-datetime {
+  --placeholder-color: var(--ion-color-warning);
+  --background: var(--ion-color-warning);
+  --border-color: var(--ion-color-warning);
+}
