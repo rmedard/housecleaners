@@ -16,8 +16,6 @@ export class ServicesPage implements OnInit {
     }
 
     ngOnInit(): void {
-        // this.authService.login({email: 'alfretoine@gmail.com', password: '122122122'});
-        this.authService.getLoggedInUser();
         this.servicesService.getServices().subscribe(data => {
             this.servicesService.interiorServices = data.filter(service => service.category_id === 1);
             this.servicesService.exteriorServices = data.filter(service => service.category_id === 2);

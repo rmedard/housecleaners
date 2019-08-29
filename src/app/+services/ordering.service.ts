@@ -39,4 +39,8 @@ export class OrderingService {
     getPlannedOrders() {
         return this.http.get<Planning[]>(`${API_URL}/plannings`, httpOptions);
     }
+
+    getProfessional(id: number) {
+        return this.http.get<Professional>(`${API_URL}/professionals/${id}`);
+    }
 }

@@ -5,6 +5,7 @@ import {CommonModule} from '@angular/common';
 import {FormsModule} from '@angular/forms';
 import {PlanningPage} from './planning.page';
 import {SharedModule} from '../+shared/shared.module';
+import {PlanningTeaserComponent} from './planning-teaser/planning-teaser.component';
 
 @NgModule({
     imports: [
@@ -14,7 +15,7 @@ import {SharedModule} from '../+shared/shared.module';
         RouterModule.forChild([{path: '', component: PlanningPage}]),
         SharedModule
     ],
-    declarations: [PlanningPage]
+    declarations: [PlanningPage, PlanningTeaserComponent]
 })
 export class PlanningPageModule {
 }
