@@ -3,6 +3,7 @@ import {HttpEvent, HttpHandler, HttpInterceptor, HttpRequest} from '@angular/com
 import {from, Observable} from 'rxjs';
 import {AuthService, Headers} from '../+services/auth.service';
 import {mergeMap} from 'rxjs/operators';
+import * as moment from 'moment';
 
 @Injectable({
     providedIn: 'root'

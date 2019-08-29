@@ -5,6 +5,7 @@ import {environment} from '../../environments/environment';
 import {ErrorHandlerService} from './error-handler.service';
 import {catchError, retry} from 'rxjs/operators';
 import {User} from '../+models/user';
+import * as moment from 'moment';
 
 const API_URL = environment.apiUrl;
 const httpOptions = {
@@ -26,6 +27,8 @@ export class AuthService {
             .subscribe(result => {
                 const res = result as HttpResponse<any>;
                 const user = {
+                    email: res.body.email,
+                    password: res.body.email,
                     accessToken: res.headers.get(Headers.accessToken),
                     tokenType: res.headers.get(Headers.tokenType),
                     client: res.headers.get(Headers.client),
@@ -39,7 +42,20 @@ export class AuthService {
     }
 
     async getLoggedInUser(): Promise<User> {
-        return await this.storage.get('LOGGED-IN-USER');
+        return await this.storage.get('LOGGED-IN-USER').then(data => {
+            if (!data) {
+                return {} as User;
+            } else {
+                let user = data as User;
+                const expiryDate = new Date(moment.duration(user.expiry, 'seconds').asMilliseconds());
+                if (moment(expiryDate).isBefore(moment(new Date()))) {
+                    this.login({email: user.email, password: user.password});
+                }
+            }
+            return data;
+        }).catch(error => {
+            console.log(error);
+        });
     }
 }
 

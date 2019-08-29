@@ -1,6 +1,7 @@
 import {Component, OnInit} from '@angular/core';
 import {Planning} from '../+models/planning';
 import {OrderingService} from '../+services/ordering.service';
+import {AuthService} from '../+services/auth.service';
 
 @Component({
     selector: 'app-planning',
@@ -13,7 +14,7 @@ export class PlanningPage implements OnInit {
 
     plannings: Planning[];
 
-    constructor(private orderingService: OrderingService) {
+    constructor(private orderingService: OrderingService, private authService: AuthService) {
     }
 
     ngOnInit(): void {
