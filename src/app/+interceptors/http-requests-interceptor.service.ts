@@ -21,9 +21,8 @@ export class HttpRequestsInterceptorService implements HttpInterceptor {
                         .set(Headers.tokenType, loggedInUser.tokenType)
                         .set(Headers.expiry, loggedInUser.expiry.toString())
                         .set(Headers.client, loggedInUser.client)
-                        .set(Headers.uid, loggedInUser.client)
+                        .set(Headers.uid, loggedInUser.uid)
                 });
-                console.log(duplicateRequest);
                 return next.handle(duplicateRequest);
             }));
         }

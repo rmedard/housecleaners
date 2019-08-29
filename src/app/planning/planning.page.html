@@ -1,3 +1,6 @@
 <app-top-header [title]="title" [showBackButton]="false"></app-top-header>
-
-<ion-content></ion-content>
+<ion-content>
+    <p *ngFor="let planning of plannings">
+        Service: {{planning.service_id}} prévu le {{planning.date}} de {{planning.start_hour}} à {{planning.end_hour}}
+    </p>
+</ion-content>

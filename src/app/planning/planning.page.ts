@@ -19,7 +19,6 @@ export class PlanningPage implements OnInit {
     ngOnInit(): void {
         this.orderingService.getPlannedOrders().subscribe(data => {
             this.plannings = data;
-            console.log(this.plannings);
         });
     }
 }
