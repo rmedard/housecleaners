@@ -6,6 +6,7 @@ import {map} from 'rxjs/operators';
 import {Professional} from '../+models/professional';
 
 import {of} from 'rxjs';
+import {Planning} from '../+models/planning';
 
 const API_URL = environment.apiUrl;
 const httpOptions = {
@@ -33,5 +34,9 @@ export class OrderingService {
                 });
                 return professionals;
             }));
+    }
+
+    getPlannedOrders() {
+        return this.http.get<Planning[]>(`${API_URL}/plannings`, httpOptions);
     }
 }

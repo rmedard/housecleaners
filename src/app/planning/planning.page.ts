@@ -1,4 +1,6 @@
 import {Component, OnInit} from '@angular/core';
+import {Planning} from '../+models/planning';
+import {OrderingService} from '../+services/ordering.service';
 
 @Component({
     selector: 'app-planning',
@@ -9,9 +11,15 @@ export class PlanningPage implements OnInit {
 
     title = 'Planning';
 
-    constructor() {
+    plannings: Planning[];
+
+    constructor(private orderingService: OrderingService) {
     }
 
     ngOnInit(): void {
+        this.orderingService.getPlannedOrders().subscribe(data => {
+            this.plannings = data;
+            console.log(this.plannings);
+        });
     }
 }

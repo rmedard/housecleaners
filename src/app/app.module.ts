@@ -11,12 +11,14 @@ import {AppComponent} from './app.component';
 import {HttpClientModule} from '@angular/common/http';
 import {MomentModule} from 'ngx-moment';
 import {SharedModule} from './+shared/shared.module';
+import {InterceptorsModule} from './+interceptors/interceptors.module';
+import {IonicStorageModule} from '@ionic/storage';
 
 @NgModule({
     declarations: [AppComponent],
     entryComponents: [],
-    imports: [BrowserModule, IonicModule.forRoot(), AppRoutingModule,
-        HttpClientModule, MomentModule, SharedModule],
+    imports: [BrowserModule, IonicModule.forRoot(), AppRoutingModule, IonicStorageModule.forRoot(),
+        HttpClientModule, MomentModule, SharedModule, InterceptorsModule],
     providers: [
         StatusBar,
         SplashScreen,
