@@ -6,6 +6,8 @@ import {ErrorHandlerService} from './error-handler.service';
 import {catchError, retry} from 'rxjs/operators';
 import {User} from '../+models/user';
 import * as moment from 'moment';
+import {EMPTY} from 'rxjs';
+import {log} from 'util';
 
 const API_URL = environment.apiUrl;
 const httpOptions = {
@@ -53,6 +55,12 @@ export class AuthService {
             return data;
         }).catch(error => {
             console.log(error);
+        });
+    }
+
+    loggedIn(): Promise<boolean> {
+        return this.storage.get('LOGGED-IN-USER').then(d => {
+            return d !== null;
         });
     }
 }

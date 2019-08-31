@@ -5,7 +5,7 @@ import {Availability} from '../+models/availability';
 import {map} from 'rxjs/operators';
 import {Professional} from '../+models/professional';
 
-import {of} from 'rxjs';
+import {from, of} from 'rxjs';
 import {Planning} from '../+models/planning';
 
 const API_URL = environment.apiUrl;
