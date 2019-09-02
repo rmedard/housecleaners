@@ -1,9 +1,24 @@
-<ion-card>
-  <ion-row>
-    <ion-col size="3">{{planning.date}}</ion-col>
-    <ion-col size="9">
-      Start: {{planning.start_hour}}
-      Professional: {{professional.first_name}}
-    </ion-col>
-  </ion-row>
+<ion-card color="primary" style='border: var(--plan-color) solid 2px'>
+    <ion-row>
+        <ion-col size="3" class="professional_thumbnail">
+            <ion-avatar>
+                <ion-img src="{{plan.professional.picture}}" class="rounded-full"></ion-img>
+            </ion-avatar>
+        </ion-col>
+        <ion-col size="9">
+            <ion-row justify-content-between>
+                <ion-card-subtitle style="font-weight: bold">{{plan.professional.last_name}}, {{plan.professional.first_name}}</ion-card-subtitle>
+                <ion-badge color="warning">{{plan.professional.price}}€/h</ion-badge>
+            </ion-row>
+            <ion-row justify-content-between style="border-top: var(--ion-color-warning) solid 1px; margin-top: 5px">
+                <ion-label color="warning">Service</ion-label>
+                <ion-text>{{plan.service.name}}</ion-text>
+            </ion-row>
+            <ion-row justify-content-between>
+                <ion-label color="warning">Date</ion-label>
+                <ion-text>{{plan.planning.date | date:'dd-MM-y'}},
+                  {{plan.planning.start_hour | date:'hh:mm'}} - {{plan.planning.end_hour | date:'hh:mm'}}</ion-text>
+            </ion-row>
+        </ion-col>
+    </ion-row>
 </ion-card>

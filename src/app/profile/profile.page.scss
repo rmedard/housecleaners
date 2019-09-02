@@ -1,0 +1,14 @@
+div#profile-block {
+  ion-row {
+    position: absolute;
+    z-index: 10;
+    display: flex;
+    width: 100%;
+  }
+
+  ion-card {
+    position: relative;
+    top: 3.5em;
+    background-color: var(--ion-color-warning);
+  }
+}

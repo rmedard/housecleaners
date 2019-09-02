@@ -1,8 +1,8 @@
-import {Component, Input, OnInit} from '@angular/core';
+import {Component, ElementRef, Input, OnInit} from '@angular/core';
 import {Planning} from '../../+models/planning';
-import {HttpClient} from '@angular/common/http';
 import {Professional} from '../../+models/professional';
-import {OrderingService} from '../../+services/ordering.service';
+import {Service} from '../../+models/service';
+import * as moment from 'moment';
 
 @Component({
     selector: 'app-planning-teaser',
@@ -11,17 +11,17 @@ import {OrderingService} from '../../+services/ordering.service';
 })
 export class PlanningTeaserComponent implements OnInit {
 
-    @Input() planning: Planning;
-    professional: Professional = {} as Professional;
+    @Input() plan: { planning: Planning, professional: Professional, service: Service };
 
-    constructor(private orderingService: OrderingService) {
+    constructor(private elementRef: ElementRef) {
     }
 
     ngOnInit() {
-        this.orderingService.getProfessional(this.planning.professional_id).subscribe(p => {
-            this.professional = p;
-            console.log(this.professional);
-        });
+        if (moment(this.plan.planning.date).isBefore(new Date())) {
+            this.elementRef.nativeElement.style.setProperty('--plan-color', 'var(--ion-color-danger)');
+        } else {
+            this.elementRef.nativeElement.style.setProperty('--plan-color', 'var(--ion-color-success)');
+        }
     }
 
 }

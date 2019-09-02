@@ -6,8 +6,7 @@ import {ErrorHandlerService} from './error-handler.service';
 import {catchError, retry} from 'rxjs/operators';
 import {User} from '../+models/user';
 import * as moment from 'moment';
-import {EMPTY} from 'rxjs';
-import {log} from 'util';
+import {Professional} from '../+models/professional';
 
 const API_URL = environment.apiUrl;
 const httpOptions = {
@@ -20,6 +19,8 @@ const httpOptions = {
 })
 export class AuthService {
 
+    LOGGED_IN = false;
+
     constructor(private http: HttpClient, private storage: Storage) {
     }
 
@@ -28,6 +29,7 @@ export class AuthService {
             .pipe(retry(3), catchError(ErrorHandlerService.handleError))
             .subscribe(result => {
                 const res = result as HttpResponse<any>;
+                const prof: Professional = res.body.data as Professional;
                 const user = {
                     email: data.email,
                     password: data.password,
@@ -35,10 +37,12 @@ export class AuthService {
                     tokenType: res.headers.get(Headers.tokenType),
                     client: res.headers.get(Headers.client),
                     expiry: Number(res.headers.get(Headers.expiry)),
-                    uid: res.headers.get(Headers.uid)
+                    uid: res.headers.get(Headers.uid),
+                    professional: prof
                 } as User;
                 this.storage.set('LOGGED-IN-USER', user).then(() => {
-                    console.log('####### Loggin done');
+                    this.LOGGED_IN = true;
+                    console.log('####### Log-in Done!');
                 });
             });
     }
@@ -53,14 +57,11 @@ export class AuthService {
                 }
             }
             return data;
+        }, error => {
+            console.log(error);
+            return {};
         }).catch(error => {
             console.log(error);
-        });
-    }
-
-    loggedIn(): Promise<boolean> {
-        return this.storage.get('LOGGED-IN-USER').then(d => {
-            return d !== null;
         });
     }
 }

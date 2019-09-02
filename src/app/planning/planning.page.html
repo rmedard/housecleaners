@@ -1,4 +1,8 @@
 <app-top-header [title]="title" [showBackButton]="false"></app-top-header>
 <ion-content>
-    <app-planning-teaser *ngFor="let planning of plannings" [planning]="planning"></app-planning-teaser>
+    <ion-item-divider *ngIf="futurePlans.length > 0"><ion-label>A venir</ion-label></ion-item-divider>
+    <app-planning-teaser *ngFor="let plan of futurePlans" [plan]="plan"></app-planning-teaser>
+    <ion-item-divider *ngIf="pastPlans.length > 0"><ion-label>Passés</ion-label></ion-item-divider>
+    <app-planning-teaser *ngFor="let plan of pastPlans" [plan]="plan"></app-planning-teaser>
+    <ion-item-divider *ngIf="pastPlans.length + futurePlans.length === 0"><ion-label>Pas de services plannifiés</ion-label></ion-item-divider>
 </ion-content>

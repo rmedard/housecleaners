@@ -7,6 +7,7 @@ import {Professional} from '../+models/professional';
 
 import {from, of} from 'rxjs';
 import {Planning} from '../+models/planning';
+import * as moment from 'moment';
 
 const API_URL = environment.apiUrl;
 const httpOptions = {
@@ -37,7 +38,14 @@ export class OrderingService {
     }
 
     getPlannedOrders() {
-        return this.http.get<Planning[]>(`${API_URL}/plannings`, httpOptions);
+        return this.http.get<Planning[]>(`${API_URL}/plannings`, httpOptions)
+            .pipe(map(plannings => {
+                plannings.map(planning => {
+                    planning.start_hour = moment(planning.start_hour).format('DD-MM-YYYY');
+                    planning.end_hour = moment(planning.end_hour).format('DD-MM-YYYY');
+                });
+                return plannings;
+            }));
     }
 
     getProfessional(id: number) {
