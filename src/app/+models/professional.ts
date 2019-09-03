@@ -1,7 +1,5 @@
-export interface Professional {
-    id: number;
-    first_name: string;
-    last_name: string;
+import {Person} from './person';
+
+export interface Professional extends Person {
     price?: number;
-    picture?: string;
 }

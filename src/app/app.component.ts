@@ -24,7 +24,7 @@ export class AppComponent {
         this.platform.ready().then(() => {
             this.statusBar.styleDefault();
             this.splashScreen.hide();
-            this.authService.login({email: 'alfretoine@gmail.com', password: '122122122'});
+            // this.authService.login({email: 'alfretoine@gmail.com', password: '122122122'});
         });
 
         this.platform.backButton.subscribe(() => {

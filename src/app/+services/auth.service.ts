@@ -3,10 +3,11 @@ import {HttpClient, HttpHeaders, HttpResponse} from '@angular/common/http';
 import {Storage} from '@ionic/storage';
 import {environment} from '../../environments/environment';
 import {ErrorHandlerService} from './error-handler.service';
-import {catchError, retry} from 'rxjs/operators';
+import {catchError, retry, tap} from 'rxjs/operators';
 import {User} from '../+models/user';
 import * as moment from 'moment';
 import {Professional} from '../+models/professional';
+import {Observable} from 'rxjs';
 
 const API_URL = environment.apiUrl;
 const httpOptions = {
@@ -27,9 +28,8 @@ export class AuthService {
     login(data: { email: string, password: string }) {
         return this.http.post(`${API_URL}/personas/sign_in`, data, httpOptions)
             .pipe(retry(3), catchError(ErrorHandlerService.handleError))
-            .subscribe(result => {
+            .pipe(tap(result => {
                 const res = result as HttpResponse<any>;
-                const prof: Professional = res.body.data as Professional;
                 const user = {
                     email: data.email,
                     password: data.password,
@@ -38,13 +38,20 @@ export class AuthService {
                     client: res.headers.get(Headers.client),
                     expiry: Number(res.headers.get(Headers.expiry)),
                     uid: res.headers.get(Headers.uid),
-                    professional: prof
+                    professional: res.body.data as Professional
                 } as User;
                 this.storage.set('LOGGED-IN-USER', user).then(() => {
                     this.LOGGED_IN = true;
                     console.log('####### Log-in Done!');
                 });
-            });
+            }));
+    }
+
+    logout() {
+        this.storage.remove('LOGGED-IN-USER').then(() => {
+           this.LOGGED_IN = false;
+           console.log('User logged out');
+        });
     }
 
     async getLoggedInUser(): Promise<User> {
@@ -53,7 +60,8 @@ export class AuthService {
                 const user = data as User;
                 const expiryDate = new Date(moment.duration(user.expiry, 'seconds').asMilliseconds());
                 if (moment(expiryDate).isBefore(moment(new Date()))) {
-                    data = this.login({email: user.email, password: user.password});
+                    this.login({email: user.email, password: user.password})
+                        .subscribe(() => this.storage.get('LOGGED-IN-USER'));
                 }
             }
             return data;
