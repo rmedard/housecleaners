@@ -20,7 +20,12 @@ export class PlanningPage implements OnInit {
     futurePlans: { planning: Planning, professional: Professional, service: Service }[] = [];
     pastPlans: { planning: Planning, professional: Professional, service: Service }[] = [];
 
-    constructor(private orderingService: OrderingService, private servicesService: ServicesService, private authService: AuthService) {
+    message: string;
+    messageReady = false;
+
+    constructor(private orderingService: OrderingService,
+                private servicesService: ServicesService,
+                private authService: AuthService) {
     }
 
     ngOnInit(): void {
@@ -34,7 +39,7 @@ export class PlanningPage implements OnInit {
     loadPlannings($event?) {
         this.futurePlans = [];
         this.pastPlans = [];
-        if (this.authService.LOGGED_IN) {
+        if (this.authService.isUserLoggedIn) {
             this.orderingService.getPlannedOrders().subscribe(data => {
                     (data as Planning[]).forEach(plan => {
                         this.servicesService.getProfessionalsByService(plan.service_id.toString()).subscribe(serv => {
@@ -59,11 +64,13 @@ export class PlanningPage implements OnInit {
                     });
                 }, error => console.log(error),
                 () => {
+                    this.messageReady = true;
                     if ($event && $event.type === 'ionRefresh') {
                         $event.target.complete();
                     }
                 });
         } else {
+            this.messageReady = true;
             if ($event && $event.type === 'ionRefresh') {
                 $event.target.complete();
             }

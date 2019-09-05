@@ -3,9 +3,20 @@
     <ion-refresher slot="fixed" (ionRefresh)="doRefresh($event)">
         <ion-refresher-content refreshingSpinner="dots"></ion-refresher-content>
     </ion-refresher>
-    <ion-item-divider *ngIf="futurePlans.length > 0"><ion-label>A venir</ion-label></ion-item-divider>
+    <ion-item-divider *ngIf="futurePlans.length > 0">
+        <ion-label>A venir</ion-label>
+    </ion-item-divider>
     <app-planning-teaser *ngFor="let plan of futurePlans" [plan]="plan"></app-planning-teaser>
-    <ion-item-divider *ngIf="pastPlans.length > 0"><ion-label>Passés</ion-label></ion-item-divider>
+    <ion-item-divider *ngIf="pastPlans.length > 0">
+        <ion-label>Passés</ion-label>
+    </ion-item-divider>
     <app-planning-teaser *ngFor="let plan of pastPlans" [plan]="plan"></app-planning-teaser>
-    <ion-item-divider *ngIf="pastPlans.length + futurePlans.length === 0"><ion-label>Pas de services plannifiés</ion-label></ion-item-divider>
+    <ion-item-divider *ngIf="!authService.isUserLoggedIn && messageReady">
+        <ion-icon name="information-circle" color="warning"></ion-icon>
+        <ion-label>Veuillez vous identifier!</ion-label>
+    </ion-item-divider>
+    <ion-item-divider *ngIf="pastPlans.length + futurePlans.length === 0 && authService.isUserLoggedIn && messageReady">
+        <ion-icon name="information-circle" color="warning"></ion-icon>
+        <ion-label>Pas de services plannifiés</ion-label>
+    </ion-item-divider>
 </ion-content>

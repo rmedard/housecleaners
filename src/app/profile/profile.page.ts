@@ -25,14 +25,16 @@ export class ProfilePage implements OnInit {
 
     login() {
         this.authService.login({
-            email: this.loginForm.controls['username'].value.toString(),
-            password: this.loginForm.controls['password'].value.toString()
+            email: this.loginForm.controls['username'].value.toString().trim(),
+            password: this.loginForm.controls['password'].value.toString().trim()
         }).subscribe(() => {
-            this.authService.getLoggedInUser().then(user => {
-                this.user = user;
+            this.authService.getUser().then(d => {
+                this.user = d;
+                const type = this.user.person.type_id === 1 ? 'client' : 'préstataire';
+                this.title = 'Profile d\'un ' + type;
             });
         }, error => {
-            this.showFailedLoginMessage(error.toString());
+            this.showFailedLoginMessage(error.toString()).then(d => console.log(d));
         });
     }
 
@@ -44,7 +46,7 @@ export class ProfilePage implements OnInit {
     async showFailedLoginMessage(messageStr: string) {
         const toast = await this.toastCtrl.create({
             message: messageStr,
-            duration: 2000,
+            duration: 3000,
             color: 'danger',
             position: 'top',
             translucent: true,
@@ -54,10 +56,8 @@ export class ProfilePage implements OnInit {
     }
 
     private initializeProfile() {
-        if (this.authService.LOGGED_IN) {
-            this.authService.getLoggedInUser().then(u => {
-                this.user = u;
-            });
+        if (this.authService.isUserLoggedIn) {
+            this.user = this.authService.user;
         } else {
             this.initializeLoginForm();
         }
@@ -65,8 +65,8 @@ export class ProfilePage implements OnInit {
 
     private initializeLoginForm() {
         this.loginForm = this.formBuilder.group({
-            username: ['', [Validators.required, Validators.minLength(3), Validators.maxLength(50)]],
-            password: ['', [Validators.required]]
+            username: ['', [Validators.required, Validators.email, Validators.maxLength(50)]],
+            password: ['', [Validators.required, Validators.minLength(2)]]
         });
     }
 }

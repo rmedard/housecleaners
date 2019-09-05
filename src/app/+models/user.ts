@@ -8,5 +8,5 @@ export interface User {
     client: string;
     expiry: number;
     uid: string;
-    professional?: Professional; // Change to persona
+    person?: Professional; // Change to persona
 }

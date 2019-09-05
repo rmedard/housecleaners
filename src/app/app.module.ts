@@ -13,6 +13,7 @@ import {MomentModule} from 'ngx-moment';
 import {SharedModule} from './+shared/shared.module';
 import {InterceptorsModule} from './+interceptors/interceptors.module';
 import {IonicStorageModule} from '@ionic/storage';
+import {NativeStorage} from '@ionic-native/native-storage/ngx';
 
 @NgModule({
     declarations: [AppComponent],
@@ -21,7 +22,7 @@ import {IonicStorageModule} from '@ionic/storage';
         HttpClientModule, MomentModule, SharedModule, InterceptorsModule],
     providers: [
         StatusBar,
-        SplashScreen,
+        SplashScreen, NativeStorage,
         {provide: RouteReuseStrategy, useClass: IonicRouteStrategy}
     ],
     bootstrap: [AppComponent]

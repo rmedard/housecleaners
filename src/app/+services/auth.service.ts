@@ -1,13 +1,11 @@
 import {Injectable} from '@angular/core';
 import {HttpClient, HttpHeaders, HttpResponse} from '@angular/common/http';
-import {Storage} from '@ionic/storage';
 import {environment} from '../../environments/environment';
 import {ErrorHandlerService} from './error-handler.service';
 import {catchError, retry, tap} from 'rxjs/operators';
 import {User} from '../+models/user';
-import * as moment from 'moment';
-import {Professional} from '../+models/professional';
-import {Observable} from 'rxjs';
+import {NativeStorage} from '@ionic-native/native-storage/ngx';
+import {Person} from '../+models/person';
 
 const API_URL = environment.apiUrl;
 const httpOptions = {
@@ -20,9 +18,10 @@ const httpOptions = {
 })
 export class AuthService {
 
-    LOGGED_IN = false;
+    isUserLoggedIn = false;
+    user: User;
 
-    constructor(private http: HttpClient, private storage: Storage) {
+    constructor(private http: HttpClient, private storage: NativeStorage) {
     }
 
     login(data: { email: string, password: string }) {
@@ -38,39 +37,42 @@ export class AuthService {
                     client: res.headers.get(Headers.client),
                     expiry: Number(res.headers.get(Headers.expiry)),
                     uid: res.headers.get(Headers.uid),
-                    professional: res.body.data as Professional
+                    person: res.body.data as Person
                 } as User;
-                this.storage.set('LOGGED-IN-USER', user).then(() => {
-                    this.LOGGED_IN = true;
+                if (!user.person.picture || user.person.picture.length === 0) {
+                    user.person.picture = 'https://www.gravatar.com/avatar/00000000000000000000000000000000?d=mp';
+                }
+                this.storage.setItem('LOGGED-IN-USER', user).then(() => {
+                    this.isUserLoggedIn = true;
+                    this.user = user;
                     console.log('####### Log-in Done!');
                 });
+                return this.user;
             }));
     }
 
     logout() {
         this.storage.remove('LOGGED-IN-USER').then(() => {
-           this.LOGGED_IN = false;
-           console.log('User logged out');
+            this.isUserLoggedIn = false;
+            delete this.user;
+            console.log('User logged out');
         });
     }
 
-    async getLoggedInUser(): Promise<User> {
-        return await this.storage.get('LOGGED-IN-USER').then(data => {
-            if (data) {
-                const user = data as User;
-                const expiryDate = new Date(moment.duration(user.expiry, 'seconds').asMilliseconds());
-                if (moment(expiryDate).isBefore(moment(new Date()))) {
-                    this.login({email: user.email, password: user.password})
-                        .subscribe(() => this.storage.get('LOGGED-IN-USER'));
-                }
+    getUser() {
+        return this.storage.getItem('LOGGED-IN-USER').then(
+            data => {
+                this.user = data;
+                this.isUserLoggedIn = this.user != null;
+                return this.user;
+            },
+            error => {
+                console.log(error);
+                this.user = null;
+                this.isUserLoggedIn = false;
+                return null;
             }
-            return data;
-        }, error => {
-            console.log(error);
-            return {};
-        }).catch(error => {
-            console.log(error);
-        });
+        );
     }
 }
 
