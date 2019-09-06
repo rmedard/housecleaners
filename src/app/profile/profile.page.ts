@@ -58,6 +58,8 @@ export class ProfilePage implements OnInit {
     private initializeProfile() {
         if (this.authService.isUserLoggedIn) {
             this.user = this.authService.user;
+            const type = this.user.person.type_id === 1 ? 'client' : 'préstataire';
+            this.title = 'Profile d\'un ' + type;
         } else {
             this.initializeLoginForm();
         }

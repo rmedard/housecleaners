@@ -5,7 +5,6 @@ import {SplashScreen} from '@ionic-native/splash-screen/ngx';
 import {StatusBar} from '@ionic-native/status-bar/ngx';
 import {Router} from '@angular/router';
 import {AuthService} from './+services/auth.service';
-import {timer} from 'rxjs';
 
 @Component({
     selector: 'app-root',
@@ -23,7 +22,8 @@ export class AppComponent {
 
     initializeApp() {
         this.platform.ready().then(() => {
-            this.statusBar.backgroundColorByHexString('#222428');
+            this.statusBar.backgroundColorByHexString('#1e2023');
+            this.statusBar.overlaysWebView(false);
             this.statusBar.styleLightContent();
             this.splashScreen.hide();
             // timer(3000).subscribe(() => {
