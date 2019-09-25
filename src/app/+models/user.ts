@@ -1,4 +1,4 @@
-import {Professional} from './professional';
+import {Person} from './person';
 
 export interface User {
     email: string;
@@ -8,5 +8,5 @@ export interface User {
     client: string;
     expiry: number;
     uid: string;
-    person?: Professional; // Change to persona
+    person?: Person;
 }

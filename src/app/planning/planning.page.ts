@@ -7,6 +7,7 @@ import {ServicesService} from '../+services/services.service';
 import * as moment from 'moment';
 import {AuthService} from '../+services/auth.service';
 import {IonContent} from '@ionic/angular';
+import {filter} from 'rxjs/operators';
 
 @Component({
     selector: 'app-planning',
@@ -41,27 +42,31 @@ export class PlanningPage implements OnInit {
         this.pastPlans = [];
         if (this.authService.isUserLoggedIn) {
             this.orderingService.getPlannedOrders().subscribe(data => {
-                    (data as Planning[]).forEach(plan => {
-                        this.servicesService.getProfessionalsByService(plan.service_id.toString()).subscribe(serv => {
-                            if (moment(plan.date).isBefore(new Date())) {
-                                this.pastPlans.push(
-                                    {
-                                        planning: plan,
-                                        service: serv,
-                                        professional: serv.professionals.filter(p => p.id === plan.professional_id)[0]
+                    (data as Planning[])
+                        .filter(order => this.authService.user.person.id === order.professional_id ||
+                            this.authService.user.person.id === order.customer_id)
+                        .forEach(plan => {
+                            this.servicesService.getProfessionalsByService(plan.service_id.toString())
+                                .subscribe(serv => {
+                                    if (moment(plan.date).isBefore(new Date())) {
+                                        this.pastPlans.push(
+                                            {
+                                                planning: plan,
+                                                service: serv,
+                                                professional: serv.professionals.filter(p => p.id === plan.professional_id)[0]
+                                            }
+                                        );
+                                    } else {
+                                        this.futurePlans.push(
+                                            {
+                                                planning: plan,
+                                                service: serv,
+                                                professional: serv.professionals.filter(p => p.id === plan.professional_id)[0]
+                                            }
+                                        );
                                     }
-                                );
-                            } else {
-                                this.futurePlans.push(
-                                    {
-                                        planning: plan,
-                                        service: serv,
-                                        professional: serv.professionals.filter(p => p.id === plan.professional_id)[0]
-                                    }
-                                );
-                            }
+                                });
                         });
-                    });
                 }, error => console.log(error),
                 () => {
                     this.messageReady = true;

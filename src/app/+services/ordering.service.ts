@@ -5,7 +5,7 @@ import {Availability} from '../+models/availability';
 import {map} from 'rxjs/operators';
 import {Professional} from '../+models/professional';
 
-import {from, of} from 'rxjs';
+import {of} from 'rxjs';
 import {Planning} from '../+models/planning';
 import * as moment from 'moment';
 
