@@ -8,6 +8,8 @@ import {Professional} from '../+models/professional';
 import {of} from 'rxjs';
 import {Planning} from '../+models/planning';
 import * as moment from 'moment';
+import {AvailableProfessionalDto} from '../+models/dto/available-professional-dto';
+import {CreatePlanningDto} from '../+models/dto/create-planning-dto';
 
 const API_URL = environment.apiUrl;
 const httpOptions = {
@@ -26,12 +28,18 @@ export class OrderingService {
         if (availability.start_time === availability.end_time) {
             return of([]);
         }
-        return this.http.post<Professional[]>(`${API_URL}/professionals/availability`, availability, httpOptions)
-            .pipe(map(professionals => {
-                professionals.map(prof => {
-                    if (!prof.picture || prof.picture.length === 0) {
-                        prof.picture = 'https://www.gravatar.com/avatar/00000000000000000000000000000000?d=mp';
-                    }
+        return this.http.post<any[]>(`${API_URL}/professionals/availability`, availability, httpOptions)
+            .pipe(map(profs => {
+                const professionals: Professional[] = [];
+                profs.map(p => {
+                    const prof = p as AvailableProfessionalDto;
+                    professionals.push({
+                        id: prof.professional_id,
+                        first_name: prof.first_name,
+                        last_name: prof.last_name,
+                        picture: !prof.picture || prof.picture.length === 0 ?
+                            'https://www.gravatar.com/avatar/00000000000000000000000000000000?d=mp' : prof.picture
+                    } as Professional);
                 });
                 return professionals;
             }));
@@ -46,6 +54,10 @@ export class OrderingService {
                 });
                 return plannings;
             }));
+    }
+
+    createPlanning(planning: CreatePlanningDto) {
+        return this.http.post(`${API_URL}/plannings`, planning, httpOptions);
     }
 
     getProfessional(id: number) {

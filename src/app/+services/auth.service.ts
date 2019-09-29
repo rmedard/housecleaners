@@ -2,10 +2,11 @@ import {Injectable} from '@angular/core';
 import {HttpClient, HttpHeaders, HttpResponse} from '@angular/common/http';
 import {environment} from '../../environments/environment';
 import {ErrorHandlerService} from './error-handler.service';
-import {catchError, retry, tap} from 'rxjs/operators';
+import {catchError, map, mergeMap, retry, switchMap, tap} from 'rxjs/operators';
 import {User} from '../+models/user';
 import {NativeStorage} from '@ionic-native/native-storage/ngx';
 import {Person} from '../+models/person';
+import {Observable} from 'rxjs';
 
 const API_URL = environment.apiUrl;
 const httpOptions = {
@@ -24,12 +25,13 @@ export class AuthService {
     constructor(private http: HttpClient, private storage: NativeStorage) {
     }
 
-    login(data: { email: string, password: string }) {
+    login(data: { email: string, password: string }): Observable<any> {
+        let user: User;
         return this.http.post(`${API_URL}/personas/sign_in`, data, httpOptions)
             .pipe(retry(3), catchError(ErrorHandlerService.handleError))
-            .pipe(tap(result => {
+            .pipe(map(result => {
                 const res = result as HttpResponse<any>;
-                const user = {
+                user = {
                     email: data.email,
                     password: data.password,
                     accessToken: res.headers.get(Headers.accessToken),
@@ -42,13 +44,18 @@ export class AuthService {
                 if (!user.person.picture || user.person.picture.length === 0) {
                     user.person.picture = 'https://www.gravatar.com/avatar/00000000000000000000000000000000?d=mp';
                 }
-                this.storage.setItem('LOGGED-IN-USER', user).then(() => {
-                    this.isUserLoggedIn = true;
-                    this.user = user;
-                    console.log('####### Log-in Done!');
-                });
-                return this.user;
-            }));
+                this.isUserLoggedIn = true;
+                this.user = user;
+            })).pipe(mergeMap(() => this.http.post(`${API_URL}/personas/me`, {},
+                {headers: new HttpHeaders({'Content-Type': 'application/json'})})
+                .pipe(map(d => {
+                    user.person = d as Person;
+                    this.storage.setItem('LOGGED-IN-USER', user).then(() => {
+                        this.user = user;
+                    });
+                    console.log(user);
+                    return user;
+                }))));
     }
 
     logout() {

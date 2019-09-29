@@ -6,6 +6,10 @@ import * as moment from 'moment';
 import {OrderingService} from '../../+services/ordering.service';
 import {Professional} from '../../+models/professional';
 import {AlertController, IonItemSliding, ToastController} from '@ionic/angular';
+import {CreatePlanningDto} from '../../+models/dto/create-planning-dto';
+import {Planning} from '../../+models/planning';
+import {AuthService} from '../../+services/auth.service';
+import {User} from '../../+models/user';
 
 const LATEST_HOUR = 18;
 const AVAILABILITY_TIME_FORMAT = 'YYYY-MM-DD HH:mm:ss';
@@ -47,7 +51,7 @@ export class SingleServicePage implements OnInit {
 
     constructor(private activatedRoute: ActivatedRoute,
                 private orderingService: OrderingService,
-                private alertCtrl: AlertController, private toastCtrl: ToastController) {
+                private alertCtrl: AlertController, private toastCtrl: ToastController, private authService: AuthService) {
     }
 
     ngOnInit() {
@@ -59,14 +63,13 @@ export class SingleServicePage implements OnInit {
 
     onDateChange(event: CustomEvent): void {
         this.computeChosenDate(new Date(event.detail.value));
-        console.log(this.getEarliestHour());
         this.orderingService.getProfessionalsByAvailability(this.availability)
-            .subscribe(professionals => this._availableProfessionals = professionals);
+            .subscribe(professionals => this._availableProfessionals = professionals as Professional[]);
     }
 
     onHourRangeChange(event: CustomEvent) {
         this.orderingService.getProfessionalsByAvailability(this.availability)
-            .subscribe(professionals => this._availableProfessionals = professionals);
+            .subscribe(professionals => this._availableProfessionals = professionals as Professional[]);
     }
 
     private computeChosenDate(date: Date): void {
@@ -107,6 +110,18 @@ export class SingleServicePage implements OnInit {
     }
 
     async confirmOrder(professional: Professional) {
+        if (this.authService.isUserLoggedIn) {
+            this.authService.getUser().then(user => {
+                if (user && (user as User).person.customer) {
+                    this.createOrder(professional);
+                } else {
+                    this.unauthorized();
+                }
+            });
+        }
+    }
+
+    async createOrder(professional: Professional) {
         const alert = await this.alertCtrl.create({
             header: 'Confirmation',
             message: 'Confirmer la commande de services de <strong>' + professional.last_name + '</strong>?',
@@ -122,7 +137,26 @@ export class SingleServicePage implements OnInit {
                     text: 'Confirmer',
                     handler: () => {
                         this.itemSliding.closeOpened();
+                        // this.createPlanning(professional);
                         this.showSuccessNotification();
+                    }
+                }
+            ]
+        });
+        await alert.present();
+    }
+
+    async unauthorized() {
+        const alert = await this.alertCtrl.create({
+            header: 'Interdit',
+            message: 'Seuls les clients peuvent commander des services. Veuillez utiliser votre compte client.',
+            buttons: [
+                {
+                    text: 'Okay',
+                    role: 'ok',
+                    cssClass: 'primary',
+                    handler: () => {
+                        this.itemSliding.closeOpened();
                     }
                 }
             ]
@@ -140,6 +174,27 @@ export class SingleServicePage implements OnInit {
             showCloseButton: true
         });
         toast.present();
+    }
+
+    createPlanning(professional: Professional) {
+        const format = moment.HTML5_FMT.DATETIME_LOCAL_MS;
+        const order = {
+            planning: [{
+                professional_id: professional.id,
+                customer_id: this.authService.user.person.customer.id,
+                date: moment(new Date(this.chosenDate)).format(format),
+                start_hour: moment(new Date(this.chosenDate))
+                    .hour(this.hourRange.lower).minute(0).second(0).format(format),
+                end_hour: moment(new Date(this.chosenDate))
+                    .hour(this.hourRange.upper).minute(0).second(0).format(format),
+                status_id: 1
+            }] as Planning[]
+        } as CreatePlanningDto;
+        console.log(order);
+        this.orderingService.createPlanning(order).subscribe(data => {
+            console.log(data);
+            this.showSuccessNotification();
+        }, error => console.log(error));
     }
 }
 

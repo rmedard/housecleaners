@@ -10,4 +10,6 @@ export interface Person {
     city_name?: string;
     post_code?: string;
     picture?: string;
+    professional?: {id: number};
+    customer?: {id: number};
 }

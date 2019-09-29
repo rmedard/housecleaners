@@ -7,7 +7,6 @@ import {ServicesService} from '../+services/services.service';
 import * as moment from 'moment';
 import {AuthService} from '../+services/auth.service';
 import {IonContent} from '@ionic/angular';
-import {filter} from 'rxjs/operators';
 
 @Component({
     selector: 'app-planning',
@@ -26,7 +25,7 @@ export class PlanningPage implements OnInit {
 
     constructor(private orderingService: OrderingService,
                 private servicesService: ServicesService,
-                private authService: AuthService) {
+                public authService: AuthService) {
     }
 
     ngOnInit(): void {

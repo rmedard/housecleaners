@@ -14,7 +14,7 @@ export class ProfilePage implements OnInit {
     user: User = {} as User;
     loginForm: FormGroup;
 
-    constructor(private authService: AuthService,
+    constructor(public authService: AuthService,
                 private formBuilder: FormBuilder,
                 private toastCtrl: ToastController) {
     }
@@ -27,14 +27,12 @@ export class ProfilePage implements OnInit {
         this.authService.login({
             email: this.loginForm.controls['username'].value.toString().trim(),
             password: this.loginForm.controls['password'].value.toString().trim()
-        }).subscribe(() => {
-            this.authService.getUser().then(d => {
-                this.user = d;
-                const type = this.user.person.type_id === 1 ? 'client' : 'préstataire';
-                this.title = 'Profile d\'un ' + type;
-            });
+        }).subscribe(data => {
+            this.user = data as User;
+            const type = this.user.person.type_id === 1 ? 'client' : 'préstataire';
+            this.title = 'Profile d\'un ' + type;
         }, error => {
-            this.showFailedLoginMessage(error.toString()).then(d => console.log(d));
+            this.showFailedLoginMessage(error.toString()).then(() => console.log(error));
         });
     }
 

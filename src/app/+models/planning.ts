@@ -6,4 +6,5 @@ export interface Planning {
     date: string;
     start_hour: string;
     end_hour: string;
+    status_id: number;
 }
