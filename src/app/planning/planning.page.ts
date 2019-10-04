@@ -40,14 +40,16 @@ export class PlanningPage implements OnInit {
         this.futurePlans = [];
         this.pastPlans = [];
         if (this.authService.isUserLoggedIn) {
+            const loggedInUser = this.authService.user.person;
             this.orderingService.getPlannedOrders().subscribe(data => {
                     (data as Planning[])
-                        .filter(order => this.authService.user.person.id === order.professional_id ||
-                            this.authService.user.person.id === order.customer_id)
+                        .filter(order =>
+                            (loggedInUser.professional && loggedInUser.professional.id === order.professional_id) ||
+                            (loggedInUser.customer && loggedInUser.customer.id === order.customer_id))
                         .forEach(plan => {
                             this.servicesService.getProfessionalsByService(plan.service_id.toString())
                                 .subscribe(serv => {
-                                    if (moment(plan.date).isBefore(new Date())) {
+                                    if (moment(plan.date + ' ' + plan.start_hour, 'YYYY-MM-DD HH:mm').isBefore(new Date())) {
                                         this.pastPlans.push(
                                             {
                                                 planning: plan,

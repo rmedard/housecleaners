@@ -2,7 +2,7 @@ import {Injectable} from '@angular/core';
 import {ServicesService} from '../+services/services.service';
 import {ActivatedRouteSnapshot, Resolve, RouterStateSnapshot} from '@angular/router';
 import {Service} from '../+models/service';
-import {Observable} from 'rxjs';
+import {from, Observable} from 'rxjs';
 
 @Injectable({
     providedIn: 'root'
@@ -13,6 +13,6 @@ export class SingleServiceResolver implements Resolve<Service> {
     }
 
     resolve(route: ActivatedRouteSnapshot, state: RouterStateSnapshot): Observable<Service> | Promise<Service> | Service {
-        return this.servicesService.getProfessionalsByService(route.paramMap.get('service_id'));
+        return from(this.servicesService.getProfessionalsByService(route.paramMap.get('service_id')));
     }
 }

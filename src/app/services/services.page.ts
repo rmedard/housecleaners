@@ -1,6 +1,5 @@
 import {Component, OnInit} from '@angular/core';
 import {ServicesService} from '../+services/services.service';
-import {AuthService} from '../+services/auth.service';
 
 @Component({
     selector: 'app-services',
@@ -12,11 +11,10 @@ export class ServicesPage implements OnInit {
     interiorServicesCount = 0;
     exteriorServicesCount = 0;
 
-    constructor(private servicesService: ServicesService, private authService: AuthService) {
+    constructor(private servicesService: ServicesService) {
     }
 
     ngOnInit(): void {
-        // this.authService.getLoggedInUser().then(d => console.log(d));
         this.servicesService.getServices().subscribe(data => {
             this.servicesService.interiorServices = data.filter(service => service.category_id === 1);
             this.servicesService.exteriorServices = data.filter(service => service.category_id === 2);

@@ -2,7 +2,7 @@ import {Injectable} from '@angular/core';
 import {HttpClient, HttpHeaders, HttpResponse} from '@angular/common/http';
 import {environment} from '../../environments/environment';
 import {ErrorHandlerService} from './error-handler.service';
-import {catchError, map, mergeMap, retry, switchMap, tap} from 'rxjs/operators';
+import {catchError, map, mergeMap, retry} from 'rxjs/operators';
 import {User} from '../+models/user';
 import {NativeStorage} from '@ionic-native/native-storage/ngx';
 import {Person} from '../+models/person';
@@ -53,7 +53,6 @@ export class AuthService {
                     this.storage.setItem('LOGGED-IN-USER', user).then(() => {
                         this.user = user;
                     });
-                    console.log(user);
                     return user;
                 }))));
     }

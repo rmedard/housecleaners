@@ -38,7 +38,8 @@ export class OrderingService {
                         first_name: prof.first_name,
                         last_name: prof.last_name,
                         picture: !prof.picture || prof.picture.length === 0 ?
-                            'https://www.gravatar.com/avatar/00000000000000000000000000000000?d=mp' : prof.picture
+                            'https://www.gravatar.com/avatar/00000000000000000000000000000000?d=mp' : prof.picture,
+                        price: prof.price
                     } as Professional);
                 });
                 return professionals;
@@ -47,17 +48,15 @@ export class OrderingService {
 
     getPlannedOrders() {
         return this.http.get<Planning[]>(`${API_URL}/plannings`, httpOptions)
-            .pipe(map(plannings => {
-                plannings.map(planning => {
-                    planning.start_hour = moment(planning.start_hour).format('DD-MM-YYYY');
-                    planning.end_hour = moment(planning.end_hour).format('DD-MM-YYYY');
-                });
-                return plannings;
-            }));
+            .pipe(map(plannings => plannings.map(planning => {
+                planning.start_hour = moment(planning.start_hour, moment.HTML5_FMT.DATETIME_LOCAL_MS).format('HH:mm');
+                planning.end_hour = moment(planning.end_hour, moment.HTML5_FMT.DATETIME_LOCAL_MS).format('HH:mm');
+                return planning;
+            })));
     }
 
     createPlanning(planning: CreatePlanningDto) {
-        return this.http.post(`${API_URL}/plannings`, planning, httpOptions);
+        return this.http.post<Planning>(`${API_URL}/plannings`, planning, httpOptions);
     }
 
     getProfessional(id: number) {

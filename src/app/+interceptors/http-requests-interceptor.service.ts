@@ -1,5 +1,5 @@
 import {Injectable} from '@angular/core';
-import {HttpEvent, HttpHandler, HttpInterceptor, HttpRequest} from '@angular/common/http';
+import {HttpErrorResponse, HttpEvent, HttpHandler, HttpInterceptor, HttpRequest} from '@angular/common/http';
 import {Observable} from 'rxjs';
 import {AuthService, Headers} from '../+services/auth.service';
 
@@ -12,7 +12,6 @@ export class HttpRequestsInterceptorService implements HttpInterceptor {
     }
 
     intercept(req: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> {
-        console.log('Url: ' + req.url + ' | LoggedIn: ' + this.authService.isUserLoggedIn);
         if (this.authService.isUserLoggedIn) {
             if (req.url.includes('plannings') || req.url.includes('me')) {
                 const duplicateRequest = req.clone({

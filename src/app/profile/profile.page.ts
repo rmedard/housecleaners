@@ -32,7 +32,8 @@ export class ProfilePage implements OnInit {
             const type = this.user.person.type_id === 1 ? 'client' : 'préstataire';
             this.title = 'Profile d\'un ' + type;
         }, error => {
-            this.showFailedLoginMessage(error.toString()).then(() => console.log(error));
+            this.showFailedLoginMessage('Connexion échouée. Veuillez réessayer.')
+                .then(() => console.log(error));
         });
     }
 

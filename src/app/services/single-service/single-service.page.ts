@@ -10,6 +10,7 @@ import {CreatePlanningDto} from '../../+models/dto/create-planning-dto';
 import {Planning} from '../../+models/planning';
 import {AuthService} from '../../+services/auth.service';
 import {User} from '../../+models/user';
+import {HttpErrorResponse} from '@angular/common/http';
 
 const LATEST_HOUR = 18;
 const AVAILABILITY_TIME_FORMAT = 'YYYY-MM-DD HH:mm:ss';
@@ -21,24 +22,16 @@ const AVAILABILITY_TIME_FORMAT = 'YYYY-MM-DD HH:mm:ss';
 })
 export class SingleServicePage implements OnInit {
 
-    @ViewChild('itemSliding', {static: false}) itemSliding: IonItemSliding;
+    @ViewChild('professionalItemSliding', {static: false}) professionalItemSliding: IonItemSliding;
 
     title = 'Service';
     service: Service = {} as Service;
     chosenDate: string;
     minimumDate: Date;
     private _availability: Availability = {} as Availability;
-    private _availableProfessionals: Professional[];
+    availableProfessionals: Professional[];
 
     hourRange: HourRange = {lower: 8, upper: LATEST_HOUR} as HourRange;
-
-    get availableProfessionals(): Professional[] {
-        return this._availableProfessionals;
-    }
-
-    set availableProfessionals(value: Professional[]) {
-        this._availableProfessionals = value;
-    }
 
     get availability(): Availability {
         this._availability.service_id = this.service.id.toString();
@@ -58,18 +51,18 @@ export class SingleServicePage implements OnInit {
         this.service = this.activatedRoute.snapshot.data.service;
         this.computeMinimumDate();
         this.computeChosenDate(new Date());
-        this._availableProfessionals = this.service.professionals;
+        this.availableProfessionals = this.service.professionals;
     }
 
     onDateChange(event: CustomEvent): void {
         this.computeChosenDate(new Date(event.detail.value));
         this.orderingService.getProfessionalsByAvailability(this.availability)
-            .subscribe(professionals => this._availableProfessionals = professionals as Professional[]);
+            .subscribe(professionals => this.availableProfessionals = professionals as Professional[]);
     }
 
     onHourRangeChange(event: CustomEvent) {
         this.orderingService.getProfessionalsByAvailability(this.availability)
-            .subscribe(professionals => this._availableProfessionals = professionals as Professional[]);
+            .subscribe(professionals => this.availableProfessionals = professionals as Professional[]);
     }
 
     private computeChosenDate(date: Date): void {
@@ -124,21 +117,20 @@ export class SingleServicePage implements OnInit {
     async createOrder(professional: Professional) {
         const alert = await this.alertCtrl.create({
             header: 'Confirmation',
-            message: 'Confirmer la commande de services de <strong>' + professional.last_name + '</strong>?',
+            message: `Confirmer la commande de services de <strong> ${professional.last_name} </strong>?`,
             buttons: [
                 {
                     text: 'Annuler',
                     role: 'cancel',
                     cssClass: 'primary',
                     handler: () => {
-                        this.itemSliding.closeOpened();
+                        this.professionalItemSliding.closeOpened();
                     }
                 }, {
                     text: 'Confirmer',
                     handler: () => {
-                        this.itemSliding.closeOpened();
-                        // this.createPlanning(professional);
-                        this.showSuccessNotification();
+                        this.professionalItemSliding.closeOpened();
+                        this.createPlanning(professional);
                     }
                 }
             ]
@@ -156,7 +148,7 @@ export class SingleServicePage implements OnInit {
                     role: 'ok',
                     cssClass: 'primary',
                     handler: () => {
-                        this.itemSliding.closeOpened();
+                        this.professionalItemSliding.closeOpened();
                     }
                 }
             ]
@@ -164,11 +156,11 @@ export class SingleServicePage implements OnInit {
         await alert.present();
     }
 
-    async showSuccessNotification() {
+    async showSuccessNotification(msg: string, success: boolean) {
         const toast = await this.toastCtrl.create({
-            message: 'Commande passé avec succès!',
-            duration: 2000,
-            color: 'warning',
+            message: msg,
+            duration: 5000,
+            color: success ? 'success' : 'danger',
             position: 'bottom',
             translucent: true,
             showCloseButton: true
@@ -187,14 +179,17 @@ export class SingleServicePage implements OnInit {
                     .hour(this.hourRange.lower).minute(0).second(0).format(format),
                 end_hour: moment(new Date(this.chosenDate))
                     .hour(this.hourRange.upper).minute(0).second(0).format(format),
-                status_id: 1
+                status_id: 1,
+                service_id: this.service.id
             }] as Planning[]
         } as CreatePlanningDto;
-        console.log(order);
         this.orderingService.createPlanning(order).subscribe(data => {
-            console.log(data);
-            this.showSuccessNotification();
-        }, error => console.log(error));
+            this.showSuccessNotification('Commande passée avec succès!', true);
+        }, error => {
+            const ex = error as HttpErrorResponse;
+            console.log(ex);
+            this.showSuccessNotification('Commande echouée!' + ex.message, false);
+        });
     }
 }
 

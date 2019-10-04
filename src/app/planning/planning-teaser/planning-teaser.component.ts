@@ -2,7 +2,6 @@ import {Component, ElementRef, Input, OnInit} from '@angular/core';
 import {Planning} from '../../+models/planning';
 import {Professional} from '../../+models/professional';
 import {Service} from '../../+models/service';
-import * as moment from 'moment';
 
 @Component({
     selector: 'app-planning-teaser',
@@ -12,15 +11,16 @@ import * as moment from 'moment';
 export class PlanningTeaserComponent implements OnInit {
 
     @Input() plan: { planning: Planning, professional: Professional, service: Service };
+    @Input() future: boolean;
 
     constructor(private elementRef: ElementRef) {
     }
 
     ngOnInit() {
-        if (moment(this.plan.planning.date).isBefore(new Date())) {
-            this.elementRef.nativeElement.style.setProperty('--plan-color', 'var(--ion-color-danger)');
-        } else {
+        if (this.future) {
             this.elementRef.nativeElement.style.setProperty('--plan-color', 'var(--ion-color-success)');
+        } else {
+            this.elementRef.nativeElement.style.setProperty('--plan-color', 'var(--ion-color-danger)');
         }
     }
 
