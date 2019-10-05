@@ -3,8 +3,7 @@
     <div id="profile-block" *ngIf="authService.isUserLoggedIn">
         <ion-row class="ion-justify-content-center profile-img">
             <ion-avatar text-center style="border: var(--ion-color-primary) solid 1px">
-                <ion-img src="{{user?.person?.picture}}"
-                         class="rounded-full"></ion-img>
+                <ion-img src="{{user?.person?.picture}}" class="rounded-full"></ion-img>
             </ion-avatar>
         </ion-row>
         <ion-card class="ion-text-center" style="background-color: var(--ion-color-light)">

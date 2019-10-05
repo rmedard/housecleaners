@@ -41,15 +41,15 @@ export class AuthService {
                     uid: res.headers.get(Headers.uid),
                     person: res.body.data as Person
                 } as User;
-                if (!user.person.picture || user.person.picture.length === 0) {
-                    user.person.picture = 'https://www.gravatar.com/avatar/00000000000000000000000000000000?d=mp';
-                }
                 this.isUserLoggedIn = true;
                 this.user = user;
             })).pipe(mergeMap(() => this.http.post(`${API_URL}/personas/me`, {},
                 {headers: new HttpHeaders({'Content-Type': 'application/json'})})
                 .pipe(map(d => {
                     user.person = d as Person;
+                    if (!user.person.picture || user.person.picture.length === 0) {
+                        user.person.picture = 'https://www.gravatar.com/avatar/00000000000000000000000000000000?d=mp';
+                    }
                     this.storage.setItem('LOGGED-IN-USER', user).then(() => {
                         this.user = user;
                     });
